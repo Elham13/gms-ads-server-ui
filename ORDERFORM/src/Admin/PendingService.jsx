@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { useNavigate } from 'react-router-dom';
+import { ORDERS } from '../utils/endpoints';
 
 function PendingService() {
   const [orders, setOrders] = useState([]);
@@ -15,7 +16,7 @@ function PendingService() {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/orders');
+      const res = await axios.get(ORDERS);
       // Filter orders where any row's deliveryDate is in the future or not marked as completed
       const pendingServices = res.data.filter(order => 
         order.rows.some(row => 
@@ -31,7 +32,7 @@ function PendingService() {
 
   const handleMarkCompleted = async (orderId, rowIndex) => {
     try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/mark-completed`, { rowIndex });
+      await axios.put(`${ORDERS}/${orderId}/mark-completed`, { rowIndex });
       fetchOrders();
     } catch (err) {
       console.error('Mark as completed failed:', err);

@@ -1,142 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { APPOINTMENTS } from "../utils/endpoints";
 
 const styles = {
   container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',  // use minHeight
-    backgroundColor: '#f5f5f5',
-    padding: '20px',
-    overflowY: 'auto',   // allow scrolling if content overflows
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh", // use minHeight
+    backgroundColor: "#f5f5f5",
+    padding: "20px",
+    overflowY: "auto", // allow scrolling if content overflows
   },
   formContainer: {
-    backgroundColor: 'white',
-    padding: '30px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: '600px',
+    backgroundColor: "white",
+    padding: "30px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    width: "100%",
+    maxWidth: "600px",
   },
   formTitle: {
-    textAlign: 'center',
-    fontSize: '2rem',
-    marginBottom: '20px',
+    textAlign: "center",
+    fontSize: "2rem",
+    marginBottom: "20px",
   },
   inputLabel: {
-    display: 'block',
-    marginBottom: '8px',
-    fontWeight: 'bold',
-    fontSize: '1rem',
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "bold",
+    fontSize: "1rem",
   },
   input: {
-    width: '100%',
-    padding: '12px',
-    marginBottom: '15px',
-    boxSizing: 'border-box',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '1rem',
+    width: "100%",
+    padding: "12px",
+    marginBottom: "15px",
+    boxSizing: "border-box",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "1rem",
   },
   button: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#003366',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '1rem',
-    cursor: 'pointer',
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#003366",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "1rem",
+    cursor: "pointer",
   },
   modalOverlay: {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
-    height: '100vh',
-    width: '100vw',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: "100vh",
+    width: "100vw",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 999,
   },
   modalContent: {
-    backgroundColor: '#fff',
-    padding: '30px',
-    borderRadius: '10px',
-    textAlign: 'center',
-    fontSize: '1.2rem',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+    backgroundColor: "#fff",
+    padding: "30px",
+    borderRadius: "10px",
+    textAlign: "center",
+    fontSize: "1.2rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
   },
-  // add css to data 
+  // add css to data
   closeButton: {
-    marginTop: '20px',
-    padding: '10px 20px',
-    backgroundColor: '#4caf50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    transition: 'background 0.3s ease',
+    marginTop: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#4caf50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "16px",
+    transition: "background 0.3s ease",
   },
   popupContainer: {
-    backgroundColor: '#fff',
-    padding: '30px',
-    borderRadius: '12px',
-    textAlign: 'center',
-    fontSize: '1.2rem',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    animation: 'fadeIn 0.5s ease-in-out',
-    maxWidth: '400px',
-    width: '90%',
-  },
-  
-  congratsText: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    marginBottom: '10px',
-  },
-  
-  subText: {
-    fontSize: '18px',
-    color: '#555',
+    backgroundColor: "#fff",
+    padding: "30px",
+    borderRadius: "12px",
+    textAlign: "center",
+    fontSize: "1.2rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+    animation: "fadeIn 0.5s ease-in-out",
+    maxWidth: "400px",
+    width: "90%",
   },
 
-  
-  
+  congratsText: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#2e7d32",
+    marginBottom: "10px",
+  },
+
+  subText: {
+    fontSize: "18px",
+    color: "#555",
+  },
 };
 
 const Appointment = () => {
   const [formData, setFormData] = useState({
-    executiveName: '',
-    contactName: '',
-    businessName: '',
-    phoneNumber: '', // Added phone number
-    date: '',
-    time: '',
-    venue: '',
+    executiveName: "",
+    contactName: "",
+    businessName: "",
+    phoneNumber: "", // Added phone number
+    date: "",
+    time: "",
+    venue: "",
   });
 
   const [showPopup, setShowPopup] = useState(false);
-  // adding the data 
+  // adding the data
   useEffect(() => {
     if (showPopup) {
       const timer = setTimeout(() => setShowPopup(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showPopup]);
-  
 
   useEffect(() => {
     const today = new Date();
     const twoDaysAgo = new Date(today);
     twoDaysAgo.setDate(today.getDate() - 2);
 
-    const formattedToday = today.toISOString().split('T')[0];
-    const formattedTwoDaysAgo = twoDaysAgo.toISOString().split('T')[0];
+    const formattedToday = today.toISOString().split("T")[0];
+    const formattedTwoDaysAgo = twoDaysAgo.toISOString().split("T")[0];
 
     setFormData((prev) => ({
       ...prev,
@@ -144,7 +141,7 @@ const Appointment = () => {
       time: today.toTimeString().slice(0, 5),
     }));
 
-    const dateInput = document.getElementById('appointmentDate');
+    const dateInput = document.getElementById("appointmentDate");
     if (dateInput) {
       dateInput.min = formattedTwoDaysAgo;
     }
@@ -162,26 +159,26 @@ const Appointment = () => {
     e.preventDefault();
 
     try {
-      await axios.post('http://localhost:5000/api/appointments', formData);
+      await axios.post(APPOINTMENTS, formData);
       setShowPopup(true);
 
       // Reset form after scheduling
       const today = new Date();
       setFormData({
-        executiveName: '',
-        contactName: '',
-        businessName: '',
-        phoneNumber: '', // Reset phone number
-        date: today.toISOString().split('T')[0],
+        executiveName: "",
+        contactName: "",
+        businessName: "",
+        phoneNumber: "", // Reset phone number
+        date: today.toISOString().split("T")[0],
         time: today.toTimeString().slice(0, 5),
-        venue: '',
+        venue: "",
       });
 
       // Hide popup after 2.5 seconds
       setTimeout(() => setShowPopup(false), 2500);
     } catch (error) {
-      console.error('Error scheduling appointment:', error);
-      alert('Error scheduling appointment');
+      console.error("Error scheduling appointment:", error);
+      alert("Error scheduling appointment");
     }
   };
 
@@ -275,16 +272,22 @@ const Appointment = () => {
       </div>
 
       {showPopup && (
-  <div style={styles.modalOverlay}>
-    <div style={styles.popupContainer}>
-      <div className="confetti"></div>
-      <h2 style={styles.congratsText}>🎉 Congratulations! 🎉</h2>
-      <p style={styles.subText}>Your appointment has been successfully scheduled! 🎊</p>
-      <button style={styles.closeButton} onClick={() => setShowPopup(false)}>Close</button>
-    </div>
-  </div>
-)}
-
+        <div style={styles.modalOverlay}>
+          <div style={styles.popupContainer}>
+            <div className="confetti"></div>
+            <h2 style={styles.congratsText}>🎉 Congratulations! 🎉</h2>
+            <p style={styles.subText}>
+              Your appointment has been successfully scheduled! 🎊
+            </p>
+            <button
+              style={styles.closeButton}
+              onClick={() => setShowPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

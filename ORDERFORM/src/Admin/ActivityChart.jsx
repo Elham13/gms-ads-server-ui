@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { format } from "date-fns";
+import { EXECUTIVES, ORDERS } from "../utils/endpoints";
 
 const ActivityChart = () => {
   const today = new Date();
   const [executiveNames, setExecutiveNames] = useState([]);
-  const [selectedExecutive, setSelectedExecutive] = useState('');
+  const [selectedExecutive, setSelectedExecutive] = useState("");
   const [completedTasks, setCompletedTasks] = useState(0);
   const [target, setTarget] = useState(100);
 
@@ -16,10 +17,10 @@ const ActivityChart = () => {
   useEffect(() => {
     const fetchExecutives = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/executives');
+        const res = await axios.get(EXECUTIVES);
         setExecutiveNames(res.data);
       } catch (err) {
-        console.error('Error fetching executives:', err);
+        console.error("Error fetching executives:", err);
       }
     };
     fetchExecutives();
@@ -42,20 +43,20 @@ const ActivityChart = () => {
 
   const fetchExecutiveOrders = async (name, year, month) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/orders');
+      const res = await axios.get(ORDERS);
       const orders = res.data;
 
-      const selectedMonthStr = `${year}-${String(month).padStart(2, '0')}`;
+      const selectedMonthStr = `${year}-${String(month).padStart(2, "0")}`;
 
-      const filtered = orders.filter(order => {
-        const orderDate = format(new Date(order.orderDate), 'yyyy-MM');
+      const filtered = orders.filter((order) => {
+        const orderDate = format(new Date(order.orderDate), "yyyy-MM");
         return order.executive === name && orderDate === selectedMonthStr;
       });
 
       let sum = 0;
-      filtered.forEach(order => {
+      filtered.forEach((order) => {
         if (Array.isArray(order.rows)) {
-          order.rows.forEach(item => {
+          order.rows.forEach((item) => {
             sum += parseFloat(item.total);
           });
         }
@@ -65,7 +66,7 @@ const ActivityChart = () => {
       setTarget(executiveTarget);
       setCompletedTasks(sum);
     } catch (err) {
-      console.error('Error fetching orders:', err);
+      console.error("Error fetching orders:", err);
     }
   };
 
@@ -73,8 +74,18 @@ const ActivityChart = () => {
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const years = Array.from({ length: 5 }, (_, i) => today.getFullYear() - i);
 
@@ -95,21 +106,54 @@ const ActivityChart = () => {
         </select>
 
         <div className="date-picker-group">
-          <select value={selectedDay} onChange={(e) => handleDateChange(Number(e.target.value), selectedMonth, selectedYear)}>
-            {days.map(day => (
-              <option key={day} value={day}>{day}</option>
+          <select
+            value={selectedDay}
+            onChange={(e) =>
+              handleDateChange(
+                Number(e.target.value),
+                selectedMonth,
+                selectedYear
+              )
+            }
+          >
+            {days.map((day) => (
+              <option key={day} value={day}>
+                {day}
+              </option>
             ))}
           </select>
 
-          <select value={selectedMonth} onChange={(e) => handleDateChange(selectedDay, Number(e.target.value), selectedYear)}>
+          <select
+            value={selectedMonth}
+            onChange={(e) =>
+              handleDateChange(
+                selectedDay,
+                Number(e.target.value),
+                selectedYear
+              )
+            }
+          >
             {months.map((month, index) => (
-              <option key={month} value={index + 1}>{month}</option>
+              <option key={month} value={index + 1}>
+                {month}
+              </option>
             ))}
           </select>
 
-          <select value={selectedYear} onChange={(e) => handleDateChange(selectedDay, selectedMonth, Number(e.target.value))}>
-            {years.map(year => (
-              <option key={year} value={year}>{year}</option>
+          <select
+            value={selectedYear}
+            onChange={(e) =>
+              handleDateChange(
+                selectedDay,
+                selectedMonth,
+                Number(e.target.value)
+              )
+            }
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
             ))}
           </select>
         </div>
